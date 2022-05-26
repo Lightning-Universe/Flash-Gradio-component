@@ -1,0 +1,3 @@
+lightning-flash[text]
+gradio
+jinja2
