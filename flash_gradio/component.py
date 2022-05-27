@@ -2,6 +2,7 @@ import logging
 import os
 import tempfile
 from typing import Dict, Optional
+import threading
 
 import gradio as gr
 from flashy.components import tasks
@@ -12,8 +13,8 @@ from lightning.storage.path import Path
 
 
 class FlashGradio(TracerPythonScript):
-    def __init__(self, *args, **kwargs):
-        super().__init__(__file__, *args, parallel=True, run_once=False, **kwargs)
+    def __init__(self, *args, parallel=True, run_once=True, **kwargs):
+        super().__init__(__file__, *args, parallel=parallel, run_once=run_once, **kwargs)
 
         self.script_dir = tempfile.mkdtemp()
         self.script_path = os.path.join(self.script_dir, "flash_gradio.py")
@@ -46,11 +47,17 @@ class FlashGradio(TracerPythonScript):
         # input text
         return self.on_after_run({})
 
+    def launch_gradio(self, interface):
+        interface.launch(
+            server_name=self.host,
+            server_port=self.port,
+        )
+
     def on_after_run(self, res):
         logging.info("Launching Gradio server")
 
         sample_input = "Lightning rocks!"
-        demo = gr.Interface(
+        interface = gr.Interface(
             fn=self.predict,
             inputs=[
                 gr.inputs.Textbox(default=sample_input, label="Input"),
@@ -60,11 +67,10 @@ class FlashGradio(TracerPythonScript):
             ],
         )
 
-        self.ready = True
-        demo.launch(
-            server_name=self.host,
-            server_port=self.port,
-        )
+        th = threading.Thread(target=self.launch_gradio, args=(interface, ))
+        th.start()
+        if th.is_alive():
+            self.ready = True
 
     def predict(self, text):
         generate_script(
