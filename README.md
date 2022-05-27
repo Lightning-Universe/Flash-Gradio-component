@@ -7,9 +7,20 @@ ______________________________________________________________________
 
 </div>
 
+## Install
+
+Use these instructions to install:
+
+```bash
+git clone https://github.com/PyTorchLightning/LAI-flash-gradio.git
+cd LAI-flash-gradio
+pip install -r requirements.txt
+pip install -e .
+```
+
 ## Use the component
 
-Note that we have a `run_once` argument to the component, this allows you to only run it once if needed. Default is `True`, which means it will only run once if not set `False` explicitly.
+Copy the following code to a file `app.py`, and run the app using: `lightning run app app.py`.
 
 ```python
 import lightning as L
@@ -19,16 +30,13 @@ from flash_gradio import FlashGradio
 
 
 class FlashGradioComponent(L.LightningFlow):
-    def __init__(self):
-        super().__init__()
-        # We only run FlashGradio once, since we only have one input
-        # default for `run_once` is `True` as well
-        self.flash_gradio = FlashGradio(run_once=True)
-        self.layout = []
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.flash_gradio = FlashGradio()
 
     def run(self):
         # Pass a checkpoint path for Gradio to load
-        checkpoint_path = "checkpoint.pt"
+        checkpoint_path = "checkpoint.ckpt"
 
         run_dict = {
             "task": "text_classification",
@@ -50,27 +58,15 @@ class FlashGradioComponent(L.LightningFlow):
         )
 
     def configure_layout(self):
-        if self.flash_gradio.ready and not self.layout:
-            self.layout.append(
-                {
-                    "name": "Predictions Explorer (Gradio)",
-                    "content": self.flash_gradio,
-                },
-            )
-        return self.layout
+        layout = [
+            {
+                "name": "Predictions Explorer (Gradio)",
+                "content": self.flash_gradio,
+            },
+        ]
+        return layout
 
 
 # To launch the gradio component
 app = LightningApp(FlashGradioComponent(), debug=True)
-```
-
-## Install
-
-Use these instructions to install:
-
-```bash
-git clone https://github.com/PyTorchLightning/LAI-flash-gradio.git
-cd LAI-flash-gradio
-pip install -r requirements.txt
-pip install -e .
 ```
