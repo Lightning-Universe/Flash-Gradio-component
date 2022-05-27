@@ -24,6 +24,7 @@ class FlashGradio(TracerPythonScript):
         self.ready = False
 
     def run(self, task: str, url: str, data_config: Dict, checkpoint: Path):
+        self.ready = False
         self._task_meta = getattr(tasks, task)
 
         # This is bad, we should not do this.
@@ -57,7 +58,6 @@ class FlashGradio(TracerPythonScript):
             outputs="text",
         )
 
-        # bad workaround?
         self.ready = True
         demo.launch(
             server_name=self.host,

@@ -1,7 +1,7 @@
 from flash_gradio import FlashGradio
 
 
-def flash_gradio_text_classification():
+def test_flash_gradio_text_classification():
     checkpoint_path = "checkpoint.ckpt"
 
     # Sample run data config to test workflow
