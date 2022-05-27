@@ -2,14 +2,11 @@ from flash_gradio import FlashGradio
 
 
 def flash_gradio_text_classification():
-    # TODO: Maybe use mock for checkpoint
-    # Worst case: have a minimal checkpoint
-    checkpoint_path = "checkpoint.pt"
+    checkpoint_path = "checkpoint.ckpt"
 
     # Sample run data config to test workflow
     run_dict = {
         "task": "text_classification",
-        # TODO: Maybe have a smaller dataset for test?
         "url": "https://pl-flash-data.s3.amazonaws.com/imdb.zip",
         "data_config": {
             "target": "from_csv",

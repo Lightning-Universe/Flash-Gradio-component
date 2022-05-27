@@ -13,8 +13,10 @@ from flashy.components.utilities import generate_script
 
 
 class FlashGradio(TracerPythonScript):
-    def __init__(self, run_once=True):
-        super().__init__(__file__, parallel=True, run_once=run_once)
+    def __init__(self, *args, **kwargs):
+        super().__init__(
+            __file__, parallel=True, run_once=False, *args, **kwargs
+        )
 
         self.script_dir = tempfile.mkdtemp()
         self.script_path = os.path.join(self.script_dir, "flash_gradio.py")
