@@ -72,7 +72,7 @@ jobs:
 
     - name: Tests
       run: |
-        coverage run --source flash_fiftyone -m py.test flash_fiftyone tests -v --junitxml=junit/test-results-${{ runner.os }}-${{ matrix.python-version }}.xml
+        coverage run --source flash_gradio -m py.test flash_gradio tests -v --junitxml=junit/test-results-${{ runner.os }}-${{ matrix.python-version }}.xml
 
     - name: Statistics
       if: success()
