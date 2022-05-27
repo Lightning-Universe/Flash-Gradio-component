@@ -51,11 +51,13 @@ class FlashGradio(TracerPythonScript):
 
         sample_input = "Lightning rocks!"
         demo = gr.Interface(
-            fn=self._apply,
+            fn=self.predict,
             inputs=[
-                gr.inputs.Textbox(default=sample_input),
+                gr.inputs.Textbox(default=sample_input, label="Input"),
             ],
-            outputs="text",
+            outputs=[
+                gr.outputs.Textbox(type="text", label="Output")
+            ],
         )
 
         self.ready = True
@@ -64,7 +66,7 @@ class FlashGradio(TracerPythonScript):
             server_port=self.port,
         )
 
-    def _apply(self, text):
+    def predict(self, text):
         generate_script(
             self.script_path,
             "flash_gradio.jinja",
