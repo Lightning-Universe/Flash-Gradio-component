@@ -4,19 +4,16 @@ import tempfile
 from typing import Dict, Optional
 
 import gradio as gr
-from lightning.components.python import TracerPythonScript
-from lightning.storage.path import Path
-
 from flashy.components import tasks
 from flashy.components.tasks import TaskMeta
 from flashy.components.utilities import generate_script
+from lightning.components.python import TracerPythonScript
+from lightning.storage.path import Path
 
 
 class FlashGradio(TracerPythonScript):
     def __init__(self, *args, **kwargs):
-        super().__init__(
-            __file__, parallel=True, run_once=False, *args, **kwargs
-        )
+        super().__init__(__file__, parallel=True, run_once=False, *args, **kwargs)
 
         self.script_dir = tempfile.mkdtemp()
         self.script_path = os.path.join(self.script_dir, "flash_gradio.py")
