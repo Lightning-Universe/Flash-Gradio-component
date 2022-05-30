@@ -74,4 +74,4 @@ class FlashGradio(TracerPythonScript):
             os.environ.update(self.env)
         res = self._run_tracer(init_globals)
         os.environ = env_copy
-        return res["predictions"]
+        return res["predictions"][0][0]
