@@ -2,19 +2,19 @@ import logging
 import os
 import tempfile
 from typing import Dict, Optional
+import threading
 
 import gradio as gr
-from lightning.components.python import TracerPythonScript
-from lightning.storage.path import Path
-
 from flashy.components import tasks
 from flashy.components.tasks import TaskMeta
 from flashy.components.utilities import generate_script
+from lightning.components.python import TracerPythonScript
+from lightning.storage.path import Path
 
 
 class FlashGradio(TracerPythonScript):
-    def __init__(self, run_once=True):
-        super().__init__(__file__, parallel=True, run_once=run_once)
+    def __init__(self, *args, parallel=True, run_once=True, **kwargs):
+        super().__init__(__file__, *args, parallel=parallel, run_once=run_once, **kwargs)
 
         self.script_dir = tempfile.mkdtemp()
         self.script_path = os.path.join(self.script_dir, "flash_gradio.py")
@@ -25,6 +25,7 @@ class FlashGradio(TracerPythonScript):
         self.ready = False
 
     def run(self, task: str, url: str, data_config: Dict, checkpoint: Path):
+        self.ready = False
         self._task_meta = getattr(tasks, task)
 
         # This is bad, we should not do this.
@@ -46,26 +47,32 @@ class FlashGradio(TracerPythonScript):
         # input text
         return self.on_after_run({})
 
-    def on_after_run(self, res):
-        logging.info("Launching Gradio server")
-
-        sample_input = "Lightning rocks!"
-        demo = gr.Interface(
-            fn=self._apply,
-            inputs=[
-                gr.inputs.Textbox(default=sample_input),
-            ],
-            outputs="text",
-        )
-
-        # bad workaround?
-        self.ready = True
-        demo.launch(
+    def launch_gradio(self, interface):
+        interface.launch(
             server_name=self.host,
             server_port=self.port,
         )
 
-    def _apply(self, text):
+    def on_after_run(self, res):
+        logging.info("Launching Gradio server")
+
+        sample_input = "Lightning rocks!"
+        interface = gr.Interface(
+            fn=self.predict,
+            inputs=[
+                gr.inputs.Textbox(default=sample_input, label="Input"),
+            ],
+            outputs=[
+                gr.outputs.Textbox(type="text", label="Output")
+            ],
+        )
+
+        th = threading.Thread(target=self.launch_gradio, args=(interface, ))
+        th.start()
+        if th.is_alive():
+            self.ready = True
+
+    def predict(self, text):
         generate_script(
             self.script_path,
             "flash_gradio.jinja",
