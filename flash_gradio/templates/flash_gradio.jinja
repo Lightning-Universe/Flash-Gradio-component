@@ -10,5 +10,5 @@ datamodule = {{ data_module_class }}.from_lists(
 )
 
 trainer = flash.Trainer()
-model = {{ task_class }}.load_from_checkpoint("{{ checkpoint }}")
+model = {{ task_class }}.load_from_checkpoint("{{ checkpoint_path }}")
 predictions = trainer.predict(model, datamodule=datamodule, output="labels")

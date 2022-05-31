@@ -2,8 +2,16 @@ import logging
 import os
 import tempfile
 from typing import Dict, Optional
+from types import ModuleType
+import shutil
 
-import gradio as gr
+from lightning.utilities.imports import _is_gradio_available
+
+if _is_gradio_available():
+    import gradio
+else:
+    gradio = ModuleType("gradio")
+
 from flash_gradio import tasks
 from flash_gradio.utilities import generate_script
 from lightning.components.python import TracerPythonScript
@@ -24,7 +32,7 @@ class FlashGradio(TracerPythonScript):
         self.script_path = os.path.join(self.script_dir, "flash_gradio.py")
         self.script_options = {"task": None, "data_config": None, "url": None}
         self._task_meta: Optional[tasks.TaskMeta] = None
-        self._checkpoint = None
+        self.checkpoint_path = None
         self.enable_queue = False
 
         self.sample_input = "Lightning rocks!"
@@ -32,18 +40,18 @@ class FlashGradio(TracerPythonScript):
     def run(self, task: str, url: str, data_config: Dict, checkpoint: Path):
         self._task_meta = getattr(tasks, task)
 
-        self._checkpoint = checkpoint
+        self.checkpoint_path = checkpoint
         self.script_options["task"] = task
         self.script_options["data_config"] = data_config
         self.script_options["url"] = url
 
-        interface = gr.Interface(
+        interface = gradio.Interface(
             fn=self.predict,
             inputs=[
-                gr.inputs.Textbox(default=self.sample_input, label="Input"),
+                gradio.inputs.Textbox(default=self.sample_input, label="Input"),
             ],
             outputs=[
-                gr.outputs.Textbox(type="text", label="Output")
+                gradio.outputs.Textbox(type="text", label="Output")
             ],
         )
         logging.info(f"Launching Gradio server at: {self.url}")
@@ -64,7 +72,7 @@ class FlashGradio(TracerPythonScript):
             task_class=self._task_meta.task_class,
             url=self.url,
             data_config=self.script_options["data_config"],
-            checkpoint=str(self._checkpoint),
+            checkpoint_path=str(self.checkpoint_path),
             input_text=str(text),
         )
         self.on_before_run()
@@ -75,3 +83,6 @@ class FlashGradio(TracerPythonScript):
         res = self._run_tracer(init_globals)
         os.environ = env_copy
         return res["predictions"][0][0]
+
+    def on_exit(self):
+        shutil.rmtree(self.script_dir)
