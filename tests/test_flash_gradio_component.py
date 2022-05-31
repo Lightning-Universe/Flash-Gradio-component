@@ -4,7 +4,6 @@ from unittest import mock
 from unittest.mock import ANY
 
 
-# Pytest patching
 @mock.patch("flash_gradio.component.gradio")
 def test_flash_gradio_text_classification(gradio_mock):
     checkpoint_path = "checkpoint.ckpt"
