@@ -20,6 +20,25 @@ pip install -e .
 
 ## Use the component
 
+**Note:** This component currently only supports `text_classification` task. So make sure to pass:
+
+```python
+run_dict = {
+    "task": "text_classification",
+    # Other meta-data can be anything for the text classification task
+    "url": "URL of the dataset",
+    "data_config": {
+        # Refer to Flash TextClassificationData module for available methods
+        "target": "from_<type>",
+        "input_field": "<column/feature name>",
+        "target_fields": "<column/feature name>",
+        "train_<>": "if from_csv is the target, then pass relative path of train.csv file",
+        "valid_<>": "if from_csv is the target, then pass relative path of valid.csv file",
+        # Pass more configs in this dict that need to be passed
+    },
+}
+```
+
 Copy the following code to a file `app.py`, and run the app using: `lightning run app app.py`.
 
 ```python
