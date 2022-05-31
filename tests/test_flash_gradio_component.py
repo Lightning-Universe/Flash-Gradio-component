@@ -1,7 +1,12 @@
 from flash_gradio import FlashGradio
 
+from unittest import mock
+from unittest.mock import ANY
 
-def test_flash_gradio_text_classification():
+
+# Pytest patching
+@mock.patch("flash_gradio.component.gradio")
+def test_flash_gradio_text_classification(gradio_mock):
     checkpoint_path = "checkpoint.ckpt"
 
     # Sample run data config to test workflow
@@ -24,4 +29,8 @@ def test_flash_gradio_text_classification():
         run_dict["data_config"],
         checkpoint_path,
     )
-    assert flash_gradio.ready
+    gradio_mock.Interface.assert_called_once_with(
+        fn=ANY,
+        inputs=ANY,
+        outputs=ANY
+    )
