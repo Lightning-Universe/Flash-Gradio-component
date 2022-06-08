@@ -30,20 +30,20 @@ class FlashGradio(TracerPythonScript):
 
         self.script_dir = tempfile.mkdtemp()
         self.script_path = os.path.join(self.script_dir, "flash_gradio.py")
-        self.script_options = {"task": None, "data_config": None, "url": None}
+        self.script_options = {"task": None, "checkpoint_path": None}
         self._task_meta: Optional[tasks.TaskMeta] = None
         self.checkpoint_path = None
         self.enable_queue = False
 
         self.sample_input = "Lightning rocks!"
 
-    def run(self, task: str, url: str, data_config: Dict, checkpoint: Path):
-        self._task_meta = getattr(tasks, task)
+    def run(self, task: str, checkpoint_path: Path):
+        self._task_meta = getattr(tasks, task, None)
+        if not self._task_meta:
+            raise ValueError(f"Only `text_classification` task is supported, but got: {task}")
 
-        self.checkpoint_path = checkpoint
         self.script_options["task"] = task
-        self.script_options["data_config"] = data_config
-        self.script_options["url"] = url
+        self.script_options["checkpoint_path"] = checkpoint_path
 
         interface = gradio.Interface(
             fn=self.predict,
@@ -70,9 +70,7 @@ class FlashGradio(TracerPythonScript):
             data_module_class=self._task_meta.data_module_class,
             task_import_path=self._task_meta.task_import_path,
             task_class=self._task_meta.task_class,
-            url=self.url,
-            data_config=self.script_options["data_config"],
-            checkpoint_path=str(self.checkpoint_path),
+            checkpoint_path=self.script_options["checkpoint_path"],
             input_text=str(text),
         )
         self.on_before_run()

@@ -25,17 +25,7 @@ pip install -e .
 ```python
 run_dict = {
     "task": "text_classification",
-    # Other meta-data can be anything for the text classification task
-    "url": "URL of the dataset",
-    "data_config": {
-        # Refer to Flash TextClassificationData module for available methods
-        "target": "from_<type>",
-        "input_field": "<column/feature name>",
-        "target_fields": "<column/feature name>",
-        "train_<>": "if from_csv is the target, then pass relative path of train.csv file",
-        "valid_<>": "if from_csv is the target, then pass relative path of valid.csv file",
-        # Pass more configs in this dict that need to be passed
-    },
+    "checkpoint_path": "<path to your checkpoint file>",
 }
 ```
 
@@ -54,26 +44,14 @@ class FlashGradioComponent(L.LightningFlow):
         self.flash_gradio = FlashGradio()
 
     def run(self):
-        # Pass a checkpoint path for Gradio to load
-        checkpoint_path = "checkpoint.ckpt"
-
         run_dict = {
             "task": "text_classification",
-            "url": "https://pl-flash-data.s3.amazonaws.com/imdb.zip",
-            "data_config": {
-                "target": "from_csv",
-                "input_field": "review",
-                "target_fields": "sentiment",
-                "train_file": "imdb/train.csv",
-                "val_file": "imdb/valid.csv",
-            },
+            "checkpoint_path": "checkpoint.ckpt",
         }
 
         self.flash_gradio.run(
             run_dict["task"],
-            run_dict["url"],
-            run_dict["data_config"],
-            checkpoint_path,
+            run_dict["checkpoint_path"],
         )
 
     def configure_layout(self):
