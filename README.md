@@ -46,7 +46,7 @@ class FlashGradioComponent(L.LightningFlow):
     def run(self):
         run_dict = {
             "task": "text_classification",
-            "checkpoint_path": "checkpoint.ckpt",
+            "checkpoint_path": "https://flash-weights.s3.amazonaws.com/0.7.0/text_classification_model.pt",
         }
 
         self.flash_gradio.run(
