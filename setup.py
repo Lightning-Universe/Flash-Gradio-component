@@ -23,11 +23,12 @@ REQUIREMENTS = [req.strip() for req in open("requirements.txt").readlines()]
 
 setup(
     name="flash_gradio",
-    version="0.0.0",
+    version="0.0.3",
     description="Run Gradio with Flash on your text inputs!",
-    author="Ethan Harris, Kushashwa Ravi Shrimali",
-    author_email="ethan@grid.ai",
+    author="Kushashwa Ravi Shrimali, Ethan Harris",
+    author_email="kush@grid.ai",
     url="https://github.com/PyTorchLightning/LAI-flash-gradio",
     packages=find_packages(exclude=["tests", "tests.*"]),
     install_requires=setup_tools._load_requirements(_PATH_ROOT),
+    include_package_data=True,
 )
