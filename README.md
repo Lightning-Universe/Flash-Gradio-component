@@ -12,7 +12,7 @@ ______________________________________________________________________
 Use these instructions to install:
 
 ```bash
-git clone https://github.com/PyTorchLightning/LAI-flash-gradio.git
+git clone https://github.com/Lightning-AI/LAI-flash-gradio.git
 cd LAI-flash-gradio
 pip install -r requirements.txt
 pip install -e .
@@ -33,7 +33,6 @@ Copy the following code to a file `app.py`, and run the app using: `lightning ru
 
 ```python
 import lightning as L
-from lightning import LightningApp
 
 from flash_gradio import FlashGradio
 
@@ -65,5 +64,5 @@ class FlashGradioComponent(L.LightningFlow):
 
 
 # To launch the gradio component
-app = LightningApp(FlashGradioComponent(), debug=True)
+app = L.LightningApp(FlashGradioComponent(), debug=True)
 ```
