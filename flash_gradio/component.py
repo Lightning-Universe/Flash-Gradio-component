@@ -5,7 +5,7 @@ from typing import Dict, Optional
 from types import ModuleType
 import shutil
 
-from lightning.utilities.imports import _is_gradio_available
+from lightning.app.utilities.imports import _is_gradio_available
 
 if _is_gradio_available():
     import gradio
@@ -14,8 +14,8 @@ else:
 
 from flash_gradio import tasks
 from flash_gradio.utilities import generate_script
-from lightning.components.python import TracerPythonScript
-from lightning.storage.path import Path
+from lightning.app.components.python import TracerPythonScript
+from lightning.app.storage.path import Path
 
 
 class FlashGradio(TracerPythonScript):
