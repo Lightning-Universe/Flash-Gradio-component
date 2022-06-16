@@ -12,8 +12,8 @@ ______________________________________________________________________
 Use these instructions to install:
 
 ```bash
-git clone https://github.com/Lightning-AI/LAI-flash-gradio.git
-cd LAI-flash-gradio
+git clone https://github.com/Lightning-AI/LAI-flash-gradio-Component.git
+cd LAI-flash-gradio-Component
 pip install -r requirements.txt
 pip install -e .
 ```

@@ -27,7 +27,7 @@ setup(
     description="Run Gradio with Flash on your text inputs!",
     author="Kushashwa Ravi Shrimali, Ethan Harris",
     author_email="kush@lightning.ai",
-    url="https://github.com/Lightning-AI/LAI-flash-gradio",
+    url="https://github.com/Lightning-AI/LAI-flash-gradio-Component",
     packages=find_packages(exclude=["tests", "tests.*"]),
     install_requires=setup_tools._load_requirements(_PATH_ROOT),
     include_package_data=True,
