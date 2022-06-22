@@ -1,9 +1,9 @@
 import logging
 import os
-import tempfile
-from typing import Dict, Optional
-from types import ModuleType
 import shutil
+import tempfile
+from types import ModuleType
+from typing import Optional
 
 from lightning.app.utilities.imports import _is_gradio_available
 
@@ -12,20 +12,17 @@ if _is_gradio_available():
 else:
     gradio = ModuleType("gradio")
 
-from flash_gradio import tasks
-from flash_gradio.utilities import generate_script
 from lightning.app.components.python import TracerPythonScript
 from lightning.app.storage.path import Path
+
+from flash_gradio import tasks
+from flash_gradio.utilities import generate_script
 
 
 class FlashGradio(TracerPythonScript):
     def __init__(self, *args, parallel=True, run_once=False, **kwargs):
         super().__init__(
-            __file__,
-            *args,
-            parallel=parallel,
-            run_once=run_once,
-            **kwargs
+            __file__, *args, parallel=parallel, run_once=run_once, **kwargs
         )
 
         self.script_dir = tempfile.mkdtemp()
@@ -40,7 +37,9 @@ class FlashGradio(TracerPythonScript):
     def run(self, task: str, checkpoint_path: Path):
         self._task_meta = getattr(tasks, task, None)
         if not self._task_meta:
-            raise ValueError(f"Only `text_classification` task is supported, but got: {task}")
+            raise ValueError(
+                f"Only `text_classification` task is supported, but got: {task}"
+            )
 
         self.script_options["task"] = task
         self.script_options["checkpoint_path"] = checkpoint_path
@@ -50,9 +49,7 @@ class FlashGradio(TracerPythonScript):
             inputs=[
                 gradio.inputs.Textbox(default=self.sample_input, label="Input"),
             ],
-            outputs=[
-                gradio.outputs.Textbox(type="text", label="Output")
-            ],
+            outputs=[gradio.outputs.Textbox(type="text", label="Output")],
         )
         logging.info(f"Launching Gradio server at: {self.url}")
         interface.launch(

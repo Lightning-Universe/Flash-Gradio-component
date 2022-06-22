@@ -29,7 +29,7 @@ run_dict = {
 }
 ```
 
-Copy the following code to a file `app.py`, and run the app using: `lightning run app app.py`.
+Copy the following code to a file `app.py`, and run the app using: `lightning run app app.py` locally. If you want to run the app on cloud, do: `lightning run app app.py --cloud`.
 
 ```python
 import lightning as L
@@ -43,14 +43,17 @@ class FlashGradioComponent(L.LightningFlow):
         self.flash_gradio = FlashGradio()
 
     def run(self):
+        # Note: FlashGradio only supports "text_classification" task
+
+        # Pass your `checkpoint_path` - can be a path on your local filesystem or hosted somewhere
         run_dict = {
             "task": "text_classification",
             "checkpoint_path": "https://flash-weights.s3.amazonaws.com/0.7.0/text_classification_model.pt",
         }
 
         self.flash_gradio.run(
-            run_dict["task"],
-            run_dict["checkpoint_path"],
+            task=run_dict["task"],
+            checkpoint_path=run_dict["checkpoint_path"],
         )
 
     def configure_layout(self):
