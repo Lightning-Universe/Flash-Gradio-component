@@ -21,9 +21,7 @@ from flash_gradio.utilities import generate_script
 
 class FlashGradio(TracerPythonScript):
     def __init__(self, *args, parallel=True, run_once=False, **kwargs):
-        super().__init__(
-            __file__, *args, parallel=parallel, run_once=run_once, **kwargs
-        )
+        super().__init__(__file__, *args, parallel=parallel, run_once=run_once, **kwargs)
 
         self.script_dir = tempfile.mkdtemp()
         self.script_path = os.path.join(self.script_dir, "flash_gradio.py")
@@ -37,9 +35,7 @@ class FlashGradio(TracerPythonScript):
     def run(self, task: str, checkpoint_path: Path):
         self._task_meta = getattr(tasks, task, None)
         if not self._task_meta:
-            raise ValueError(
-                f"Only `text_classification` task is supported, but got: {task}"
-            )
+            raise ValueError(f"Only `text_classification` task is supported, but got: {task}")
 
         self.script_options["task"] = task
         self.script_options["checkpoint_path"] = checkpoint_path
